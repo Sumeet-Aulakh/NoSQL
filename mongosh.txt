@@ -1,0 +1,56 @@
+mongod
+mongoimport --db company --collection Department --file Department.json
+mongoimport --db company --collection Department_Locations --file Dept_locations.json
+mongoimport --db company --collection Employee --file Employee.json
+mongoimport --db company --collection Works_on --file Works_on.json
+
+mongosh
+show databases
+use company
+show collections
+
+db.Department.updateMany({}, {$set : {"Location": []}})
+db.Department.updateOne({"Dnumber":1},{$set : {"Location": ["Houston"]}})
+db.Department.updateOne({"Dnumber":5},{$set : {"Location": ["Bellaire","Houston","Sugarland"]}})
+db.Department.updateOne({"Dnumber":4},{$set : {"Location": ["Stafford"]}})
+
+db.Employee.updateMany({},{$set : {"Project" : [{"Pno":0, "Hours":0}]}})
+db.Employee.updateOne({"Ssn":"666884444"},{$set :{"Project": [{"Pno": 3,"Hours":40}]}})
+db.Employee.updateOne({"Ssn":"333445555"},{$set :{"Project": [{"Pno": 20,"Hours":10},{"Pno":3,"Hours":10},{"Pno":2,"Hours":10},{"Pno":10,"Hours":10}]}})
+db.Employee.updateOne({"Ssn":"999887777"},{$set :{"Project": [{"Pno": 30,"Hours":30},{"Pno":10,"Hours":10}]}})
+db.Employee.updateOne({"Ssn":"453453453"},{$set :{"Project": [{"Pno": 1,"Hours":20},{"Pno":2,"Hours":20}]}})
+db.Employee.updateOne({"Ssn":"987987987"},{$set :{"Project": [{"Pno": 10,"Hours":35},{"Pno":30,"Hours":5}]}})
+db.Employee.updateOne({"Ssn":"987654321"},{$set :{"Project": [{"Pno": 30,"Hours":20},{"Pno":20,"Hours":15}]}})
+db.Employee.updateOne({"Ssn":"888665555"},{$set :{"Project": [{"Pno": 20,"Hours":0}]}})
+db.Employee.updateOne({"Ssn":"123456789"},{$set :{"Project": [{"Pno": 1,"Hours":32.5},{"Pno":2,"Hours":7.5}]}})
+
+db.Department_locations.drop()
+db.Works_on.drop()
+
+db.Employee.insertOne({Ssn:"3138140",Fname:"Sumeet Singh",Lname:"Aulakh",Minit:"S",Bdate:"2002-01-06",Address: "67 Rozmus Bay, Winnipeg, MB", Sex:"M",Salary: 50000, Super_ssn: "888665555", Dno: 5, Dependents: [], Project: []})
+
+db.Department.find({},{_id:0, Dname: 1, Dnumber: 1}).sort({"Dnumber":1})
+
+db.Employee.find({},{_id:0,Ssn:1,Project:1}).sort({"Ssn":-1})
+
+db.Department.find({},{_id:0, Dname: 1, "Project.Pname":1}).sort({"Dname":1})
+
+db.Employee.find({},{_id:0,"Project.Pno":1})
+
+db.Employee.distinct("Project.Pno")
+
+db.Employee.find({"Project.Pno":{$in:[1,2]}},{_id:0,Fname:1,Lname:1,Dno:1}).sort({"Lname":1})
+
+db.Employee.find({"Dependents.Relationship":{$all:["Son","Daughter","Spouse"]}},{_id:0,Lname:1}).sort({"Fname":1})
+
+db.Employee.find({"Dependents.Relationship":{$in: ["Son","Daughter"]}},{_id:0,Fname:1})
+
+db.Employee.find({"Project.Hours":{$gt: 30}},{_id:0,Lname:1})
+
+db.Employee.find({Salary:{$lt: 50000}},{_id:0,Lname:1})
+
+db.Employee.find({},{_id:0,Lname:1,Salary:1}).sort({Bdate:1}).limit(1)
+
+mongoexport --db company --collection Department --out Department.json
+
+mongoexport --db company --collection Employee --out Employee.json
